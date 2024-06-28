@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tareas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Lista de Tareas</h1>
+        <div class="input-group mb-3">
+            <input type="text" id="new-task" class="form-control" placeholder="Nueva Tarea">
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="add-task">Agregar</button>
+            </div>
+        </div>
+        <ul class="list-group" id="task-list"></ul>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#add-task').click(function() {
+                const taskText = $('#new-task').val().trim();
+                if (taskText !== "") {
+                    const taskItem = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>${taskText}</span>
+                                        <div>
+                                            <button class="btn btn-success btn-sm complete-task">Completar</button>
+                                            <button class="btn btn-danger btn-sm delete-task">Borrar</button>
+                                        </div>
+                                      </li>`;
+                    $('#task-list').append(taskItem);
+                    $('#new-task').val('');
+                }
+            });
+
+            $('#task-list').on('click', '.complete-task', function() {
+                $(this).closest('li').find('span').toggleClass('completed');
+            });
+
+            $('#task-list').on('click', '.delete-task', function() {
+                $(this).closest('li').remove();
+            });
+        });
+    </script>
+</body>
+</html>
