@@ -22,7 +22,21 @@
                 <button class="btn btn-primary" id="add-task">Agregar</button>
             </div>
         </div>
-        <ul class="list-group" id="task-list"></ul>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Tareas por Completar</h2>
+                <ul class="list-group" id="task-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <h2>Tareas Completas</h2>
+                <ul class="list-group" id="completed-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <h2>Tareas Canceladas</h2>
+                <ul class="list-group" id="cancelled-list"></ul>
+            </div>
+        </div>
     </div>
 
     <!-- jQuery and Bootstrap JS -->
@@ -33,24 +47,64 @@
             $('#add-task').click(function() {
                 const taskText = $('#new-task').val().trim();
                 if (taskText !== "") {
-                    const taskItem = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>${taskText}</span>
-                                        <div>
-                                            <button class="btn btn-success btn-sm complete-task">Completar</button>
-                                            <button class="btn btn-danger btn-sm delete-task">Borrar</button>
-                                        </div>
-                                      </li>`;
+                    const taskItem = createTaskItem(taskText);
                     $('#task-list').append(taskItem);
                     $('#new-task').val('');
                 }
             });
 
-            $('#task-list').on('click', '.complete-task', function() {
-                $(this).closest('li').find('span').toggleClass('completed');
+            function createTaskItem(taskText) {
+                return `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            <input type="text" class="form-control edit-task d-none" value="${taskText}">
+                            <span class="task-text">${taskText}</span>
+                            <div>
+                                <button class="btn btn-info btn-sm edit-button">Editar</button>
+                                <button class="btn btn-success btn-sm complete-task">Completar</button>
+                                <button class="btn btn-warning btn-sm cancel-task">Cancelar</button>
+                                <button class="btn btn-danger btn-sm delete-task">Borrar</button>
+                            </div>
+                        </li>`;
+            }
+
+            $('#task-list, #completed-list, #cancelled-list').on('click', '.complete-task', function() {
+                const taskItem = $(this).closest('li');
+                taskItem.find('.complete-task').remove();
+                taskItem.find('.edit-button').remove();
+                taskItem.find('.cancel-task').remove();
+                $('#completed-list').append(taskItem);
             });
 
-            $('#task-list').on('click', '.delete-task', function() {
+            $('#task-list, #completed-list, #cancelled-list').on('click', '.cancel-task', function() {
+                const taskItem = $(this).closest('li');
+                taskItem.find('.complete-task').remove();
+                taskItem.find('.edit-button').remove();
+                taskItem.find('.cancel-task').remove();
+                $('#cancelled-list').append(taskItem);
+            });
+
+            $('#task-list, #completed-list, #cancelled-list').on('click', '.delete-task', function() {
                 $(this).closest('li').remove();
+            });
+
+            $('#task-list, #completed-list, #cancelled-list').on('click', '.edit-button', function() {
+                const taskItem = $(this).closest('li');
+                taskItem.find('.task-text').toggleClass('d-none');
+                taskItem.find('.edit-task').toggleClass('d-none').focus();
+            });
+
+            $('#task-list, #completed-list, #cancelled-list').on('blur', '.edit-task', function() {
+                const taskItem = $(this).closest('li');
+                const newText = $(this).val().trim();
+                if (newText !== "") {
+                    taskItem.find('.task-text').text(newText).toggleClass('d-none');
+                    $(this).toggleClass('d-none');
+                }
+            });
+
+            $('#task-list, #completed-list, #cancelled-list').on('keypress', '.edit-task', function(e) {
+                if (e.which === 13) { // Enter key pressed
+                    $(this).blur();
+                }
             });
         });
     </script>
